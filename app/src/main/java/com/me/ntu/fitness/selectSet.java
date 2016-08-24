@@ -8,38 +8,24 @@ import android.view.MenuItem;
 import android.view.View;
 
 
-public class MainActivity extends ActionBarActivity {
+public class selectSet extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_select_set);
     }
 
-    public void bodyinfo(View view) {
-        Intent intent = new Intent(this , Bodyinfo.class);
+    public void chestsetExplaination(View view) {
+        Intent intent = new Intent(this , chestsetExplaination.class);
         startActivity(intent);
-    }
-
-    public void selectSet(View view) {
-        Intent intent = new Intent(this , selectSet.class);
-        startActivity(intent);
-    }
-
-    public void training(View view) {
-        Intent intent = new Intent(this , training.class);
-        startActivity(intent);
-    }
-
-    public void close(View view) {
-        this.finish();
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_select_set, menu);
         return true;
     }
 
@@ -57,6 +43,4 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-
 }
