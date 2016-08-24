@@ -29,6 +29,8 @@
         android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:text="離開"
-        android:id="@+id/button4" />
+        android:id="@+id/button4"
+        android:onClick="close"
+        android:nestedScrollingEnabled="false" />
 
 </LinearLayout>
