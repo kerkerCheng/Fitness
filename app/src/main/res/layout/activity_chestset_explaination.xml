@@ -10,10 +10,10 @@
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:weightSum="1"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:weightSum="1">
+        android:layout_alignParentStart="true">
 
         <TextView
             android:layout_width="wrap_content"
@@ -32,7 +32,8 @@
         <Spinner
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/numberSpinner" />
+            android:id="@+id/numberSpinner"
+            android:clickable="false" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -40,8 +41,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="四組"
             android:id="@+id/textView7"
-            android:layout_gravity="left|center_horizontal"
-            android:layout_marginLeft="20dp" />
+            android:layout_gravity="left|center_horizontal" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -49,8 +49,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="組間休息 : 90s"
             android:id="@+id/textView8"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="20dp" />
+            android:layout_marginTop="10dp" />
 
         <Button
             android:layout_width="wrap_content"

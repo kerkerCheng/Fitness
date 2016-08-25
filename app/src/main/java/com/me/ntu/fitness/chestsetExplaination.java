@@ -1,5 +1,6 @@
 package com.me.ntu.fitness;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 
 public class chestsetExplaination extends ActionBarActivity {
@@ -23,8 +25,9 @@ public class chestsetExplaination extends ActionBarActivity {
     private ArrayAdapter<String> levellist;
     private ArrayAdapter<String> numberlist;
 
-    public int levelselected;
-    public int numberselected;
+    public int levelselected = 10;
+    public int numberselected = 10;
+    private Context mContext;
 
 
     @Override
@@ -34,6 +37,7 @@ public class chestsetExplaination extends ActionBarActivity {
 
         levelspinner = (Spinner)findViewById(R.id.levelSpinner);
         numberspinner = (Spinner)findViewById(R.id.numberSpinner);
+        mContext = this.getApplicationContext();
 
         levellist = new ArrayAdapter<String>(chestsetExplaination.this , android.R.layout.simple_spinner_item , level);
         numberlist = new ArrayAdapter<String>(chestsetExplaination.this , android.R.layout.simple_spinner_item , number);
@@ -46,18 +50,9 @@ public class chestsetExplaination extends ActionBarActivity {
 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                switch (pos) {
-                    case 0:
-                        levelselected = 10;
-                    case 1:
-                        levelselected = 15;
-                    case 2:
-                        levelselected = 20;
-                    case 3:
-                        levelselected = 25;
-                    default:
-                        levelselected = 10;
-                }
+
+                Toast.makeText(mContext, "你選的是" + level[pos], Toast.LENGTH_SHORT).show();
+                levelselected = pos*5 + 10;
             }
 
             @Override
@@ -70,20 +65,9 @@ public class chestsetExplaination extends ActionBarActivity {
 
             @Override
             public void onItemSelected(AdapterView<?> parent , View view , int pos , long id) {
-                switch (pos) {
-                    case 0:
-                        numberselected = 10;
-                    case 1:
-                        numberselected = 15;
-                    case 2:
-                        numberselected = 20;
-                    case 3:
-                        numberselected = 25;
-                    default:
-                        numberselected = 10;
-                }
 
-
+                Toast.makeText(mContext, "你選的是" + number[pos], Toast.LENGTH_SHORT).show();
+                numberselected = pos*5 + 10;
             }
 
             @Override

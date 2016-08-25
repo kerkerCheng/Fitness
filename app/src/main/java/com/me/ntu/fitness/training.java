@@ -38,7 +38,7 @@ public class training extends ActionBarActivity {
 
     ArrayList<BluetoothDevice> pairedDeviceArrayList;
 
-    TextView textInfo, textStatus, textByteCnt;
+    TextView textInfo, textStatus, textByteCnt , levelText , numberText;
     ListView listViewPairedDevice;
 
     ArrayAdapter<BluetoothDevice> pairedDeviceAdapter;
@@ -49,9 +49,7 @@ public class training extends ActionBarActivity {
     ThreadConnectBTdevice myThreadConnectBTdevice;
     ThreadConnected myThreadConnected;
 
-
-
-
+    public int level , number;
 
 
     @Override
@@ -59,10 +57,19 @@ public class training extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_training);
 
+        Bundle bundle = getIntent().getExtras();
+        level = bundle.getInt("level");
+        number = (int)bundle.getDouble("number");
+
+        levelText = (TextView)findViewById(R.id.level);
+        numberText = (TextView)findViewById(R.id.number);
         textInfo = (TextView)findViewById(R.id.info);
         textStatus = (TextView)findViewById(R.id.status);
         textByteCnt = (TextView)findViewById(R.id.textbyteCnt);
         listViewPairedDevice = (ListView)findViewById(R.id.pairedlist);
+
+        levelText.setText("要做" + level + "公斤");
+        numberText.setText("要做" + number + "下");
 
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)){
             Toast.makeText(this,
