@@ -1,11 +1,15 @@
 package com.me.ntu.fitness;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -13,9 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,7 +39,7 @@ public class training extends ActionBarActivity {
 
     ArrayList<BluetoothDevice> pairedDeviceArrayList;
 
-    TextView textInfo, textStatus, textByteCnt , levelText , numberText;
+    TextView textInfo, textStatus, textByteCnt , levelText , numberText , whatNumber , howManySets , bear , qk;
     ListView listViewPairedDevice;
 
     ArrayAdapter<BluetoothDevice> pairedDeviceAdapter;
@@ -49,13 +50,17 @@ public class training extends ActionBarActivity {
     ThreadConnectBTdevice myThreadConnectBTdevice;
     ThreadConnected myThreadConnected;
 
-    public int level , number;
+    public int level , number , sets , numbers;
+    public String a = "A";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_training);
+
+        sets = 1;
+        numbers = 1;
 
         Bundle bundle = getIntent().getExtras();
         level = bundle.getInt("level");
@@ -67,13 +72,17 @@ public class training extends ActionBarActivity {
         textStatus = (TextView)findViewById(R.id.status);
         textByteCnt = (TextView)findViewById(R.id.textbyteCnt);
         listViewPairedDevice = (ListView)findViewById(R.id.pairedlist);
+        whatNumber = (TextView)findViewById(R.id.whatNumber);
+        howManySets = (TextView)findViewById(R.id.howManySets);
+        bear = (TextView)findViewById(R.id.bear);
+        qk = (TextView)findViewById(R.id.qk);
 
         levelText.setText("要做" + level + "公斤");
         numberText.setText("要做" + number + "下");
 
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)){
             Toast.makeText(this,
-                    "FEATURE_BLUETOOTH NOT support",
+                    "FEATURE_BLUETOOTH IS NOT support",
                     Toast.LENGTH_LONG).show();
             finish();
             return;
@@ -85,7 +94,7 @@ public class training extends ActionBarActivity {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
             Toast.makeText(this,
-                    "Bluetooth is not supported on this hardware platform",
+                    "Bluetooth is not supported on this hardware",
                     Toast.LENGTH_LONG).show();
             finish();
             return;
@@ -118,12 +127,6 @@ public class training extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-
-
-
-
-
 
     @Override
     protected void onStart() {
@@ -169,6 +172,9 @@ public class training extends ActionBarActivity {
                     textStatus.setText("start ThreadConnectBTdevice");
                     myThreadConnectBTdevice = new ThreadConnectBTdevice(device);
                     myThreadConnectBTdevice.start();
+
+                    whatNumber.setText("第1下");
+                    howManySets.setText("第1組");
                 }
             });
         }
@@ -328,12 +334,12 @@ public class training extends ActionBarActivity {
             byte[] buffer = new byte[1024];
             int bytes;
 
-            String strRx = "";
 
             while (true) {
                 try {
+
                     bytes = connectedInputStream.read(buffer);
-                    final String strReceived = new String(buffer, 0, bytes);
+                    final String strReceived = new String(buffer, 0, 1);
                     final String strByteCnt = String.valueOf(bytes) + " bytes received.\n";
 
                     runOnUiThread(new Runnable(){
@@ -341,7 +347,47 @@ public class training extends ActionBarActivity {
                         @Override
                         public void run() {
                             textStatus.append(strReceived);
-                            textByteCnt.append(strByteCnt);
+
+                            if(strReceived.equals(a)) {
+                                numbers ++;
+                                whatNumber.setText("第" + String.valueOf(numbers) + "下");
+
+                                if(numbers == number) {
+
+                                    numbers = 0;
+                                    sets ++;
+
+                                    if(sets == 5) {
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(training.this);
+                                        builder.setMessage("結束訓練，紀錄已儲存");
+                                        builder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                Intent intent = new Intent(training.this, MainActivity.class);
+                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                startActivity(intent);
+                                            }
+                                        });
+                                        builder.show();
+                                    }
+
+                                    qkTimer();
+                                    AstringSetter();
+
+                                    howManySets.setText("第" + String.valueOf(sets) + "組");
+                                }
+                            }
+                            else if(strReceived.equals("B")) {
+                                bear.setText("一般負荷");
+                            }
+                            else if(strReceived.equals("D")) {
+                                bear.setText("高度負荷");
+                            }
+                            else if(strReceived.equals("C")) {
+                                bear.setText("輕度負荷");
+                            }
+
+                            //textByteCnt.append(strByteCnt);
                         }});
 
                 } catch (IOException e) {
@@ -359,23 +405,37 @@ public class training extends ActionBarActivity {
                 }
             }
         }
+    }
 
-        public void write(byte[] buffer) {
-            try {
-                connectedOutputStream.write(buffer);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
+    public void qkTimer() {
 
-        public void cancel() {
-            try {
-                connectedBluetoothSocket.close();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+        qk.setText("休息還剩10秒");
+
+        new CountDownTimer(10000 , 1000){
+
+            @Override
+            public void onFinish() {
+                qk.setText("");
             }
-        }
+
+            public void onTick(long millisUntilFinished) {
+                qk.setText("休息還剩" + millisUntilFinished/1000 + "秒");
+            }
+        }.start();
+
+    }
+
+    public void AstringSetter() {
+
+        a = "G";
+        whatNumber.setText("第0下");
+
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable(){
+            @Override
+            public void run() {
+                a = "A";
+            }}, 10000);
     }
 }

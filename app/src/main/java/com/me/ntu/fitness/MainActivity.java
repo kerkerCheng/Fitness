@@ -16,6 +16,11 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
     }
 
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);//must store the new intent unless getIntent() will return the old one
+    }
+
     public void bodyinfo(View view) {
         Intent intent = new Intent(this , Bodyinfo.class);
         startActivity(intent);
